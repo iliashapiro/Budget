@@ -1,0 +1,73 @@
+<div ng-controller="Temp1Ctrl">
+  <p>Hierarchy Check: <input class="form-control" type="text" ng-model="values.dimension"></p>
+  <button class="btn btn-primary" ng-click="checkInfo()" type="button">Test</button>
+  
+  <table ng-if="lists.hierarchies.length > 0" class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+      </tr>        
+    </thead>
+    <tbody>
+      <tr ng-repeat="hierarchy in lists.hierarchies">
+        <td><a ng-click="checkHierarchy(hierarchy.Name)">{{hierarchy.Name}}</a></td>
+        <td>{{hierarchy}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="row">
+    <div class="col-md-12">
+    
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th ng-repeat="year in ['2009', '2010', '2011']">{{year}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="month in ['Jan', 'Feb', 'Mar']">
+            <td>{{month}}</td>
+            <td ng-repeat="year in ['2009', '2010', '2011']">
+              <tm1-ui-dbr
+                 tm1-instance="dev"
+                 tm1-cube="Balance Sheet"
+                 tm1-elements='"Actual","Year::{{year}} && Period::{{month}}","Local","Total Europe","Corporate","Net Income","Amount"'
+                 tm1-data-decimal="0">
+              </tm1-ui-dbr>
+            </td>
+          </tr>          
+        </tbody>
+      </table>
+      
+    </div>
+  </div>
+  
+  <p>Normal DBR</p>
+  <p>
+    <tm1-ui-dbr
+       tm1-instance="dev"
+       tm1-cube="Balance Sheet"
+       tm1-elements='"Actual","2009","Local","Total Europe","Corporate","Net Income","Amount"'
+       tm1-data-decimal="0">
+    </tm1-ui-dbr>
+  </p>
+  
+  <p>DBR(s) with Same Common First Element</p>
+  <p>
+    <tm1-ui-dbr
+       tm1-instance="dev"
+       tm1-cube="Balance Sheet"
+       tm1-elements='"Financial::Yes && Actual","Year::2009 && Period::Jan","Local","Total Europe","Corporate","Net Income","Amount"'
+       tm1-data-decimal="0">
+    </tm1-ui-dbr>
+    <tm1-ui-dbr
+       tm1-instance="dev"
+       tm1-cube="Balance Sheet"
+       tm1-elements='"Financial::Yes && Actual","Year::2009 && Period::Jan","Local","Finland","Corporate","Net Income","Amount"'
+       tm1-data-decimal="0">
+    </tm1-ui-dbr>
+  </p>
+</div>

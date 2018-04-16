@@ -1,0 +1,335 @@
+<div ng-controller="ForecastUploadCtrl">
+
+
+  <style>
+    input[type='file'] {
+      opacity:0;
+      position:absolute;  top:0px;
+      z-index:99;
+      width:100%;
+      cursor: pointer; 
+      }
+  </style>
+
+  
+
+ 
+<div ng-hide="true">
+	<tm1-ui-element-list
+		tm1-instance="UofA_TM1_FP-Dev"
+		tm1-dimension="FP Forecast Scenario"
+		tm1-subset="z_sys_CanvasForecast"
+		ng-model="lists.scenario">
+	</tm1-ui-element-list>
+
+
+</div>
+<!-- "UofA_TM1_FP-Dev", "FP Current Department", -->
+<tm1-ui-element-list 
+  tm1-instance="UofA_TM1_FP-Dev" 
+  tm1-dimension="FP Current Department" 
+  tm1-subset="tm1DepartmentList" 
+  ng-model="lists.tm1DepartmentList">
+  </tm1-ui-element-list>
+
+  <tm1-ui-element-list 
+  tm1-instance="UofA_TM1_FP-Dev" 
+  tm1-dimension="FP Account" 
+  tm1-subset="tm1AccountList"
+  ng-model="lists.tm1AccoutList">
+  </tm1-ui-element-list>
+<!-- $tm1Ui.dimensionElement("UofA_TM1_FP-Dev", "USP Project", record.ProjectID).then(function(value){  -->
+   <tm1-ui-element-list tm1-instance="UofA_TM1_FP-Dev" tm1-dimension="USP Project" 
+        tm1-subset="Default"
+        ng-model="lists.tm1ProjectList">
+    </tm1-ui-element-list>
+
+  <div class="row">
+   <div class="col-md-12">
+           <table class="table table-hover" ng-if="lists.tm1DepartmentList" ng-show="false" >
+        <thead>
+          <tr>
+            <th>key</th>
+             		
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in lists.tm1DepartmentList " >
+            <td >{{item.key}}</td>  
+             
+          </tr>
+        </tbody> 
+      </table>
+       <table class="table table-hover" ng-if="lists.tm1ProjectList" ng-show="false" >
+        <thead>
+          <tr>
+            <th>key</th>
+             		
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in lists.tm1ProjectList " >
+            <td >{{item.key}}</td>  
+             
+          </tr>
+        </tbody> 
+      </table>
+      <table class="table table-hover" ng-if="lists.tm1AccoutList" ng-show="false" >
+        <thead>
+          <tr>
+            <th>key</th>
+             		
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in lists.tm1AccoutList " >
+            <td >{{item.key}}</td>  
+             
+          </tr>
+        </tbody> 
+      </table>
+      
+      <table class="table table-hover" ng-if="lists.tm1AccoutList" ng-show="false" >
+        <thead>
+          <tr>
+            <th>key</th>
+             		
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in lists.tm1AccoutList " >
+            <td >{{item.key}}</td>  
+             
+          </tr>
+        </tbody> 
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-md-12">
+        <h2>
+             <tm1-ui-dbr tm1-instance="UofA_TM1_FP-Dev" tm1-cube="FP Setting" tm1-elements="Current Planning Year - Forecast,String"  tm1-read-only="true" ng-model="$root.financialYear"></tm1-ui-dbr>
+          <span style="float: left; width: 50px; ">
+            <i ng-if="$root.isLoading"  class="fa fa-cog fa-spin" ></i>
+            <i ng-if="!$root.isLoading" class="fa fa-cloud-upload"></i>
+          </span> Upload Department Forecast
+        </h2>
+      </div>
+ 
+
+  </div>
+
+  <div class="row">
+      <div class="col-lg-3 col-md-6 col-12 panel">
+					<a href="files/Template.xlsx" target="_blank" style="color:white">
+									<button class="btn btn-primary" style="width:100%">
+												<i class="fa fa-download  fa-fw"></i> Get Template
+									</button>
+					</a>      
+			</div>
+      <div class="col-lg-3 col-md-6 col-12 panel">
+					<label class="btn btn-primary btn-file" style="width:100%">
+									<i class="fa fa-upload fa-fw"></i> Validate
+									<js-xls type='file' onread="read" onerror="error" style="display: none;"></js-xls>
+					</label>
+      </div>
+      <!--
+      <div class="col-lg-3 col-md-6 col-12 panel">
+          <button class="btn btn-primary" style="width:100%" title="Search Products" data-toggle="modal" data-target="#productSearch">
+            <i class="fa fa-search fa-fw"></i> Search Products
+          </button>
+      </div>
+      -->
+      <div class="col-lg-3 col-md-6 col-12 panel">
+          <button class="btn btn-default" ng-disabled="$root.isLoading" style="width:100%" ng-click="save()" ng-class="{'btn-success': values.sheetName}">
+            <i ng-if="$root.isLoading"  class="fa fa-cog fa-spin fa-fw" ></i>
+            <i ng-if="!$root.isLoading" class="fa fa-floppy-o fa-fw"></i>
+            Commit
+          </button>
+      </div>
+  </div>
+
+  <div class="row">
+    
+  <!--=========================================-->
+    <!--                                         -->
+  <!--          Select a version             -->
+  
+  <div class="col-md-12">
+
+    <div class="panel {{selections.panelRadio}}">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{selections.panelRadioButton}}</h3>
+        </div>
+        <div class="panel-body">
+
+                        <label class="radio-inline control-label" ng-repeat="scenario in lists.scenario">
+                                 <input type="radio" ng-model="SelectedScenario" name="name" value="{{scenario.key}}" required ng-change="onSelectedVersion(SelectedScenario)" />{{scenario.key}}
+                        </label>
+
+
+      </div>
+    </div>
+</div>
+</div>
+  
+  <div class="row">
+    
+  <!--=========================================-->
+    <!--                                         -->
+  <!--          Display Excel file             -->
+  
+  <div class="col-md-12" ng-init="$root.filterValid = '';">
+    <button class="btn btn-primary"  ng-class="$root.filterValid === '' ? 'active':''" ng-click="$root.filterValid = '';">ALL</button>
+    <button class="btn btn-success"  ng-class="$root.filterValid === true ? 'active':''"  ng-click="$root.filterValid = true;">VALID</button>
+    <button class="btn btn-danger"  ng-class="$root.filterValid === false ? 'active':''"  ng-click="$root.filterValid = false;">NOT VALID</button>
+     
+    <div class="panel {{selections.panelClass}}">
+        <div class="panel-heading">
+          <h3 class="panel-title" ng-if="$root.isLoading && selections.messageUpload === 'false'">Click on the upload button to upload a file</h3>
+          <h3 class="panel-title" ng-if="!$root.isLoading">{{selections.panelTitle}}</h3>
+          <h3 class="panel-title" ng-if="$root.isLoading && selections.messageUpload === 'true'">
+              <i class="fa fa-cog fa-spin" ></i> Uploading the data into TM1...</h3>
+        </div>
+        <div class="panel-body" style="overflow:auto; overflow-x:auto; height:500px;">
+            
+            <div class="row" ng-if="values.sheetName">
+                <div class="col-md-12">
+                <table class="table table-responsive">
+                  <thead>
+                    <tr class="alert alert-primary">
+                      <th class="text-center" ng-hide="false">row #</th>
+                      <th class="text-center">Department</th>
+                      <th class="text-center">Department Name</th>
+                      <th class="text-center">Project ID</th>
+                      <th class="text-center">Project Name</th>
+                      <th class="text-center">Account Code</th>
+                      <th class="text-center">Account Name</th>
+                      <th class="text-center">{{lists.recordHeaders[0].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[1].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[2].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[3].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[4].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[5].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[6].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[7].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[8].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[9].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[10].period}}</th>
+                      <th class="text-center">{{lists.recordHeaders[11].period}}</th>
+                      <th class="text-center">Validation</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="item in lists.records"  ng-show="$root.filterValid === true && item.selected || $root.filterValid === false && !item.selected || $root.filterValid === ''">
+                      <td class="text-center" ng-hide="false">{{item.row}} <input  type="checkbox" ng-model="item.selected"/> </td>
+                      <td class="text-left">{{item.Department}}</td>
+                      <td class="text-left">{{item.DepartmentName}}</td>
+                      <td class="text-left">{{item.ProjectID}}</td>
+                      <td class="text-left">{{item.ProjectName}}</td>
+                      <td class="text-left">{{item.AccountCode}}</td>
+                      <td class="text-left">{{item.AccountName}}</td>
+                      <td class="text-right">{{item.m01 | number:1}}</td>
+                      <td class="text-right">{{item.m02 | number:1}}</td>
+                      <td class="text-right">{{item.m03 | number:1}}</td>
+                      <td class="text-right">{{item.m04 | number:1}}</td>
+                      <td class="text-right">{{item.m05 | number:1}}</td>
+                      <td class="text-right">{{item.m06 | number:1}}</td>
+                      <td class="text-right">{{item.m07 | number:1}}</td>
+                      <td class="text-right">{{item.m08 | number:1}}</td>
+                      <td class="text-right">{{item.m09 | number:1}}</td>
+                      <td class="text-right">{{item.m10 | number:1}}</td>
+                      <td class="text-right">{{item.m11 | number:1}}</td>
+                      <td class="text-right">{{item.m12 | number:1}}</td>
+                      <td class="text-center"> 
+                        <!--<span ng-repeat="e in item.error" class="label label-danger" style="font-size: 0.95em; margin-right: 5px;">{{e}}</span>-->
+                        <span  class="label label-default" style="font-size: 0.95em; margin-right: 5px;"  ng-if="!item.saved && !item.validated && item.errorMsg ===''">Pending...</span>
+                        <span  class="label label-danger" style="font-size: 0.95em; margin-right: 5px;">{{item.errorMsg}}</span>
+                        <span class="label label-success" style="font-size: 0.95em; margin-right: 5px;" ng-if="item.saved"> saved!</span>
+                         
+                        <span>
+                          <span ng-show="false">
+                           <tm1-ui-dbra 
+                              tm1-instance="UofA_TM1_FP-Dev" 
+                              tm1-dimension="USP Project" 
+                              tm1-element="{{item.ProjectID}}" 
+                              tm1-attribute="Project Status" 
+                              tm1-read-only="true" 
+                              ng-model="item.ProjectStatus">
+                           </tm1-ui-dbra>
+                          <tm1-ui-dbr 
+                              tm1-instance="UofA_TM1_FP-Dev" 
+                              tm1-cube="FP Forecast" 
+                              tm1-elements="All Projects,{{selections.scenario}},{{$root.financialYear}},{{item.Department}},NET OPERATING RESULT L1,Project Budget Flag" 
+                              tm1-read-only="true"
+                              ng-model="item.DepartmentValid"
+                          ></tm1-ui-dbr>
+                          </span>
+                          <span ng-if="item.DepartmentValid && item.ProjectStatus && (item.ProjectStatus+'') === 'Active' ">
+                            <span class="label label-success" style="font-size: 0.95em; margin-right: 5px;" ng-if="!item.saved && item.errorMsg ===''" ng-init="item.selected = true"> 
+                              <i class="fa fa-check" aria-hidden="true"> </i> VALID
+
+                              </span>
+                          </span>
+                            <span ng-if="item.DepartmentValid && item.ProjectStatus &&  item.errorMsg ==='' && (item.ProjectStatus+'') === 'Inactive'">
+                              <span class="label label-danger" style="font-size: 0.95em; margin-right: 5px;" ng-init="item.selected = false; ">{{item.ProjectID}} -  NOT VALID!</span>
+                          </span>
+                          <span ng-if="item.DepartmentValid && item.ProjectStatus &&  item.errorMsg ==='' && (item.DepartmentValid+'') != 'Y'">
+                              <span class="label label-danger" style="font-size: 0.95em; margin-right: 5px;" ng-init="item.selected = false; ">{{item.Department}} - NOT VALID!</span>
+                          </span>
+                          </span>
+                          <span>
+                         
+                          </span>
+                        <i class="fa fa-spinner fa-spin fa-fw" ng-if="item.saving"></i> 
+                        <!-- "All Projects", $scope.selections.scenario, $rootScope.financialYear,-->
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+  <!--=========================================-->
+  <!--                                         -->
+  <!--        Modal for the search button      -->
+  <!--  
+  <div id="productSearch" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Product Search</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <tm1-ui-subnm tm1-instance="dev" 
+                            tm1-dimension="Product"
+                            tm1-mdx="{TM1SORT( {TM1FILTERBYLEVEL( {TM1SUBSETALL( [Product] )}, 0)}, ASC)}" 
+                            tm1-attribute="Code&Description" 
+                            tm1-server-mode="true" 
+                            ng-model="productSearch"></tm1-ui-subnm>
+              <tm1-ui-dbra ng-hide="true" tm1-instance="dev" tm1-dimension="Product" tm1-element="{{productSearch}}" tm1-attribute="Code&Description" ng-model="projectDescription"></tm1-ui-dbra>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <button class="btn btn-primary" title="Copy Product" ng-disabled="!projectDescription" ng-class="{'btn-success': isProductCopied}" ngclipboard data-clipboard-text="{{projectDescription}}" ngclipboard-success="copyProductSuccess(e);">
+                <i  ng-if="!isProductCopied" class="fa fa-clipboard fa-fw" style="margin-right: 5px;"></i>
+                <i  ng-if="isProductCopied" class="fa fa-check fa-fw" style="margin-right: 5px;"></i>
+                <span>Copy Product</span>
+              </button>
+            </div>
+          </div>        
+        </div>
+      </div>
+    </div>
+  </div>
+-->
+</div>

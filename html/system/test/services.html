@@ -1,0 +1,70 @@
+<div ng-controller="ServicesCtrl">
+
+  <div class="toolbar">
+    <div class="pull-right">
+
+    </div>
+    <h3><strong>Service Tests</strong></h3>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <form class="form-inline">
+        <div class="form-group">
+          <label class="control-label">Instance</label>
+          <input type="text" class="form-control" placeholder="Instance" ng-model="values.instance">
+        </div>
+        <div class="form-group">
+          <label class="control-label">User</label>
+          <input type="text" class="form-control" placeholder="User" ng-model="values.user">
+        </div>
+        <div class="form-group">
+          <label class="control-label">Pass</label>
+          <input type="text" class="form-control" placeholder="Password" ng-model="values.pass">
+        </div>
+        
+        <button type="button" class="btn btn-default" ng-click="testLogin()">Test Login</button>
+        <button type="button" class="btn btn-default" ng-click="testAdminLogin()">Test Admin</button>
+        <button type="button" class="btn btn-default" ng-click="testServices()">Test Services</button>
+        <div class="checkbox">
+          <label ng-init="values.isPA = true;">
+            <input type="checkbox" ng-model="values.isPA"> is TM1 PA
+          </label>
+        </div>
+        <div class="checkbox" data-toggle="tooltip" data-placement="right" title="{{values.messageAnnotation}}">
+          <label ng-init="values.isWriteAnnotationsAllowed = true;">
+            <input type="checkbox" ng-model="values.isWriteAnnotationsAllowed"> Write Annotations
+          </label>
+        </div>
+        <div class="checkbox">
+          <label ng-init="values.testChores = true;">
+            <input type="checkbox" ng-model="values.testChores"> Test Chores
+          </label>
+        </div>
+        <button type="button" class="btn btn-default" ng-click="reset()">Reset</button>
+      </form>      
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-md-12"></div>
+  </div>
+  
+  <table class="table table-hover table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Test Case</th>
+        <th>Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="test in lists.tests track by $index" ng-class="{'danger':!test.success, 'success':test.success}">
+        <td>{{$index + 1}}</td>
+        <td>{{test.description}}</td>
+        <td>{{test.result}}</td>
+      </tr>
+    </tbody>
+  </table>
+  
+</div>

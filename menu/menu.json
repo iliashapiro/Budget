@@ -1,0 +1,18 @@
+[
+  {
+    "label": "Budget Upload",
+    "icon_class": "fa-file-text-o",
+    "data": {
+      "page": "budget-upload"
+    },
+    "expanded": false
+  },
+  {
+    "label": "Forecast Upload",
+    "icon_class": "fa-file-text-o",
+    "data": {
+      "page": "forecast-upload"
+    },
+    "expanded": false
+  }
+]

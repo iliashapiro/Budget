@@ -1,0 +1,10 @@
+{
+  "forecast-upload": {
+    "url": "/forecast-upload",
+    "templateUrl": "html/Forecast Upload.html"
+  },
+  "budget-upload": {
+    "url": "/budget-upload",
+    "templateUrl": "html/Budget Upload.html"
+  }
+}
